@@ -17,24 +17,16 @@ def move_file(command: str) -> None:
 
     current_path = ""
     if dir_path:
-        parts = dir_path.split("/")
-    else:
-        parts = []
+        for part in dir_path.split("/"):
+            current_path = os.path.join(current_path, part)
+            if not os.path.exists(current_path):
+                os.mkdir(current_path)
 
-    for part in parts:
-        if current_path == "":
-            current_path += part
-        else:
-            current_path = current_path + "/" + part
+    full_path = os.path.join(dir_path, file_name)
 
-        if not os.path.exists(current_path):
-            os.mkdir(current_path)
-
-    if dir_path:
-        full_path = dir_path + "/" + file_name
-    else:
-        full_path = file_name
-
-    with open(source, "r") as f1, open(full_path, "w") as f2:
-        f2.write(f1.read())
+    try:
+        with open(source, "r") as f1, open(full_path, "w") as f2:
+            f2.write(f1.read())
         os.remove(source)
+    except FileNotFoundError:
+        return
